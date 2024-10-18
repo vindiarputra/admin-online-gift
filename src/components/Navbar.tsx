@@ -32,9 +32,7 @@ export default function Navbar() {
 		},
 	];
 
-	if (!isSignedIn) {
-		return null
-	}
+
 
 	return (
 		<nav className="bg-[#f2f2f2] border-b-2 border-black">
