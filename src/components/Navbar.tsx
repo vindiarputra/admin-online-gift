@@ -1,16 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import { SignedOut, useClerk, UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
-
 
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 	const { signOut } = useClerk();
 	const { isSignedIn, user, isLoaded } = useUser();
+	const userButtonRef = useRef<HTMLDivElement>(null);
+
+	const handleClick = () => {
+		if (userButtonRef.current) {
+			userButtonRef.current.click(); // Ini akan memicu klik pada UserButton
+		}
+	};
 
 	const menuItems = [
 		{
@@ -32,7 +38,7 @@ export default function Navbar() {
 		},
 	];
 
-
+	console.log(user);
 
 	return (
 		<nav className="bg-[#f2f2f2] border-b-2 border-black">
@@ -42,54 +48,37 @@ export default function Navbar() {
 					<div className="flex-shrink-0">
 						<span className="text-black text-2xl font-bold">AdminLogo</span>
 					</div>
-
-					{/* Desktop Menu */}
-					<div className="hidden md:block">
-						<div className="ml-10 flex items-baseline space-x-4">
-							{menuItems.map((item) => (
-								<a
-									key={item.name}
-									href={item.href}
-									className="text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] px-3 py-2 rounded-md text-sm font-medium border-2 border-black">
-									{item.name}
-								</a>
-							))}
-						</div>
-					</div>
-
-					{/* User Menu */}
-					<div className="hidden md:block">
-						<div className="ml-4 flex items-center md:ml-6">
-							<div className="relative">
-								<button
-									onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-									className="flex items-center text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] px-3 py-2 rounded-md text-sm font-medium border-2 border-black">
-									<UserButton />
-									<span>Admin User</span>
-									<ChevronDown className="ml-2 h-4 w-4" />
-								</button>
-								{isUserMenuOpen && (
-									<div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white border-2 border-black">
-										<div className="py-1">
-											<Button variant={"outline"} className="w-full   justify-start">
-												<User className="mr-3 h-4 w-4" />
-												Profile
-											</Button>
-											<Button
-												variant={"outline"}
-												className="w-full   justify-start"
-												onClick={() => signOut({ redirectUrl: "/sign-in" })}>
-												<LogOut className="mr-3 h-4 w-4" />
-												Sign out
-											</Button>
-										</div>
-									</div>
-								)}
+					{/* {isSignedIn ? (
+						<> */}
+							<div className="hidden md:block">
+								<div className="flex items-baseline space-x-4">
+									{menuItems.map((item) => (
+										<a
+											key={item.name}
+											href={item.href}
+											className="text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] px-3 py-2 rounded-md text-sm font-medium border-2 border-black">
+											{item.name}
+										</a>
+									))}
+								</div>
 							</div>
-						</div>
-					</div>
 
-					{/* Mobile menu button */}
+							<div className="hidden md:block ">
+								<div className="ml-4 flex items-center md:ml-6 w-full ">
+									<UserButton
+										appearance={{
+											elements: {
+												userButtonAvatarBox: "w-10 h-10", // Custom width and height
+											},
+										}}
+									/>
+								</div>
+							</div>
+						{/* </>
+					) : (
+						<></>
+					)} */}
+
 					<div className="md:hidden">
 						<button
 							onClick={() => setIsMenuOpen(!isMenuOpen)}

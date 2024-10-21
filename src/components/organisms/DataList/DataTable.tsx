@@ -49,9 +49,9 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 		<div className="w-full">
 			<div className="flex items-center py-4">
 				<Input
-					placeholder={`Filter by name`}
-					value={table.getColumn("status")?.getFilterValue() as string}
-					onChange={(event) => table.getColumn("status")?.setFilterValue(event.target.value)}
+					placeholder={`Filter by label`}
+					value={table.getColumn("label")?.getFilterValue() as string}
+					onChange={(event) => table.getColumn("label")?.setFilterValue(event.target.value)}
 					className="w-96 border-black border-2 p-2.5 focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:bg-[#FFA6F6] active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
 				/>
 			</div>
@@ -78,7 +78,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
 							table.getRowModel().rows.map((row) => (
 								<TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
 									{row.getVisibleCells().map((cell) => (
-										<TableCell key={cell.id}>
+										<TableCell key={cell.id} className="whitespace-normal break-words max-w-96 ">
 											{flexRender(cell.column.columnDef.cell, cell.getContext())}
 										</TableCell>
 									))}

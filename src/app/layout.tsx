@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
 	title: "Create Next App",
@@ -31,6 +32,7 @@ export default function RootLayout({
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 					<Navbar />
 					{children}
+					<Toaster />
 				</body>
 			</html>
 		</ClerkProvider>

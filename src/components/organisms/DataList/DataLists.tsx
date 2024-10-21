@@ -1,70 +1,22 @@
-
-
-
-import { columns, Payment } from "./Columns";
+import { supabase } from "@/utils/supabase";
+import { Banners, columns } from "./Columns";
 import { DataTable } from "./DataTable";
 
-async function getData(): Promise<Payment[]> {
-	// Fetch data from your API here.
-	return [
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		{
-			id: "728ed52f",
-			amount: 100,
-			status: "pending",
-			email: "m@example.com",
-		},
-		// ...
-	];
+async function fetchBannerData() {
+	const { data, error } = await supabase.from("banners").select();
+	if (error) {
+		console.error("Error fetching banner data:", error);
+		return [];
+	}
+	return data || [];
 }
 
 export default async function DataLists() {
-	const data = await getData();
+	const bannerData = await fetchBannerData();
 
 	return (
-		<div className="container mx-auto py-10">
-			<DataTable columns={columns} data={data} />
+		<div className="container mx-auto">
+			<DataTable columns={columns} data={bannerData} />
 		</div>
 	);
 }

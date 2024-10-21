@@ -1,25 +1,30 @@
 "use client";
 
+import CellActions from "@/components/moleculs/CellActions";
 import { ColumnDef } from "@tanstack/react-table";
 
-export type Payment = {
+export type Banners = {
 	id: string;
-	amount: number;
-	status: "pending" | "processing" | "success" | "failed";
-	email: string;
+	label: string;
+	image_url: string;
+	// createAt: string;
 };
 
-export const columns: ColumnDef<Payment>[] = [
+export const columns: ColumnDef<Banners>[] = [
 	{
-		accessorKey: "status",
-		header: "Status",
+		accessorKey: "id",
+		header: "id",
 	},
 	{
-		accessorKey: "email",
-		header: "Email",
+		accessorKey: "label",
+		header: "Label",
 	},
 	{
-		accessorKey: "amount",
-		header: "Amount",
+		accessorKey: "image_url",
+		header: "ImageUrl",
+	},
+	{
+		accessorKey: "actions",
+		cell: ({ row }) => <CellActions data={row.original} />,
 	},
 ];
