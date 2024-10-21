@@ -1,64 +1,59 @@
 import { supabase } from "@/utils/supabase";
+import { NextResponse } from "next/server";
 
+// GET: Mengambil data banner berdasarkan bannerId
 export async function GET(req: Request, { params }: { params: { bannerId: string } }) {
 	try {
 		const { bannerId } = params;
 		const { data, error } = await supabase.from("banners").select().eq("id", bannerId);
 		if (error) {
-			throw new Error(error.message);
+			throw new Error("Failed to fetch banner");
 		}
-		return new Response(JSON.stringify(data), { status: 200 });
+		return NextResponse.json(data, { status: 200 });
 	} catch (error) {
-		return new Response(JSON.stringify(error), { status: 500 });
+		return NextResponse.json(
+			{ message: "Something went wrong while fetching the banner" },
+			{ status: 500 }
+		);
 	}
 }
 
-// export async function DELETE(req: Request, { params }: { params: { bannerId: string } }) {
-//     try {
-//         const { bannerId } = params;
-//         const { data, error } = await supabase.from("banners").delete().eq("id", bannerId);
-//         if (error) {
-//             throw new Error(error.message);
-//         }
-//         return new Response(JSON.stringify(data), { status: 200 });
-//     } catch (error) {
-//         return new Response(JSON.stringify(error), { status: 500 });
-//     }
-// }
-
+// PATCH: Memperbarui data banner berdasarkan bannerId
 export async function PATCH(req: Request, { params }: { params: { bannerId: string } }) {
 	try {
 		const { bannerId } = params;
 		const { label, image_url } = await req.json();
 		const { data, error } = await supabase
 			.from("banners")
-			.update({ label: label, image_url: image_url })
+			.update({ label, image_url })
 			.eq("id", bannerId);
 		if (error) {
-			throw new Error(error.message);
+			throw new Error("Failed to update banner");
 		}
-		return new Response(JSON.stringify(data), { status: 200 });
+		return NextResponse.json(data, { status: 200 });
 	} catch (error) {
-		return new Response(JSON.stringify(error), { status: 500 });
+		return NextResponse.json(
+			{ message: "Something went wrong while updating the banner" },
+			{ status: 500 }
+		);
 	}
 }
 
+// POST: Menambahkan banner baru
 export async function POST(req: Request) {
 	try {
 		const { label, image_url } = await req.json();
-		const { data, error } = await supabase
-			.from("banners")
-			.insert([{ label, image_url: image_url }]);
+		const { data, error } = await supabase.from("banners").insert([{ label, image_url }]);
 
 		if (error) {
-			console.error("Error uploading data to Supabase:", error);
-			return { success: false, error };
+			throw new Error("Failed to create banner");
 		}
 
-		console.log("Successfully uploaded to Supabase:", data);
-		return { success: true, data };
+		return NextResponse.json({ success: true, data }, { status: 200 });
 	} catch (error) {
-		console.error("An error occurred during the upload:", error);
-		return { success: false, error };
+		return NextResponse.json(
+			{ message: "Something went wrong while creating the banner" },
+			{ status: 500 }
+		);
 	}
 }
