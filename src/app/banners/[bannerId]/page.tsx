@@ -1,10 +1,10 @@
 import FormBanner from "@/components/organisms/Form/FormBanner";
-import React, { useEffect } from "react";
+import React from "react";
 
-const page = (params: { bannerId: string }) => {
+const page = () => {
 	return (
 		<div className="flex flex-col gap-2">
-			<FormBanner bannerId={params.bannerId} />
+			<FormBanner/>
 		</div>
 	);
 };

@@ -23,7 +23,7 @@ const formSchema = z.object({
 	images: z.string().min(1, "Image is required"),
 });
 
-const FormBanner = ({ bannerId }: { bannerId: string }) => {
+const FormBanner = () => {
 	const path = usePathname();
 	const currentPath = path.split("/")[path.split("/").length - 1];
 	const [bannerData, setBannerData] = useState<any>(null);
