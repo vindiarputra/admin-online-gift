@@ -20,8 +20,7 @@ const generateSignature = (publicId: string, apiSecret: string) => {
 	return `public_id=${publicId}&timestamp=${timestamp}${apiSecret}`;
 };
 
-const DeleteButtonImage: FC<DeleteButtonImageProps> = ({ public_id, onRemove, publicUrl }) => {
-	const handleDeleteImage = async (publicId: string) => {
+export const handleDeleteImage = async (publicId: string, onRemove?: (value: string) => void, publicUrl?: string) => {
 		const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 		const timestamp = new Date().getTime();
 		const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
@@ -50,17 +49,18 @@ const DeleteButtonImage: FC<DeleteButtonImageProps> = ({ public_id, onRemove, pu
 			}
 
 			const result = await response.json();
-			onRemove(publicUrl);
+			if (onRemove) onRemove(publicUrl!);
 			console.log("Image deleted:", result);
 		} catch (error) {
 			console.error("Something went wrong, please try again later.", error);
 		}
 	};
 
+const DeleteButtonImage: FC<DeleteButtonImageProps> = ({ public_id, onRemove, publicUrl }) => {
 	return (
 		<Button
 			type="button"
-			onClick={() => handleDeleteImage(public_id)}
+			onClick={() => handleDeleteImage(public_id, onRemove, publicUrl)}
 			variant="destructive"
 			size="icon">
 			<Trash className="h-4 w-4" />

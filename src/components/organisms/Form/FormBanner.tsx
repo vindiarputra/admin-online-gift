@@ -15,8 +15,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ImageUpload from "../ImageUpload";
-import { useToast } from "@/hooks/use-toast";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const formSchema = z.object({
 	label: z.string().min(1, "Label is required"),
@@ -28,7 +27,7 @@ const FormBanner = () => {
 	const currentPath = path.split("/")[path.split("/").length - 1];
 	const [bannerData, setBannerData] = useState<any>(null);
 	const [loading, setLoading] = useState(false);
-	const { toast } = useToast();
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -72,10 +71,7 @@ const FormBanner = () => {
 				body: JSON.stringify({ label: values.label, image_url: values.images }),
 			});
 			setLoading(false);
-
-			toast({
-				title: "Banner Updated Successfully",
-			});
+			router.push("/banners");
 		} else {
 			await fetch(`/api/banners/new-banner`, {
 				method: "POST",
@@ -85,10 +81,7 @@ const FormBanner = () => {
 				body: JSON.stringify({ label: values.label, image_url: values.images }),
 			});
 			setLoading(false);
-
-			toast({
-				title: "Banner Upload Successfully",
-			});
+			router.push("/banners");
 		}
 	}
 

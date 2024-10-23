@@ -1,5 +1,4 @@
-"use client"
-
+"use client";
 
 import { useState } from "react";
 import { Plus, ChevronLeft, ChevronRight, Trash2, Edit2, X } from "lucide-react";
@@ -11,7 +10,7 @@ import DataLists from "@/components/organisms/DataList/DataLists";
 import { useRouter } from "next/navigation";
 
 export default function EnhancedBannerManagement() {
-	const router = useRouter()
+	const router = useRouter();
 
 	return (
 		<div className="p-6 bg-[#f2f2f2] min-h-screen font-mono">
