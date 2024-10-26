@@ -4,6 +4,9 @@ import Navbar from "@/components/Navbar";
 import { ClerkProvider } from "@clerk/nextjs";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/toaster";
+import { currentUser } from "@clerk/nextjs/server";
+import { Suspense } from "react";
+import NavbarSkeleton from "@/components/loading/NavbarSkeleton";
 
 export const metadata: Metadata = {
 	title: "Create Next App",
@@ -26,11 +29,14 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+
 	return (
 		<ClerkProvider>
 			<html lang="en">
 				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-					<Navbar />
+					<Suspense fallback={<NavbarSkeleton/>}>
+						<Navbar />
+					</Suspense>
 					{children}
 					<Toaster />
 				</body>

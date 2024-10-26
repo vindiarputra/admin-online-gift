@@ -4,13 +4,17 @@ import { useRef, useState } from "react";
 import { Menu, X, ChevronDown, User, LogOut } from "lucide-react";
 import { SignedOut, useClerk, UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
+import { usePathname } from "next/navigation";
+import { Skeleton } from "./ui/skeleton";
 
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
-	const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 	const { signOut } = useClerk();
 	const { isSignedIn, user, isLoaded } = useUser();
 	const userButtonRef = useRef<HTMLDivElement>(null);
+	const path = usePathname();
+	const currentPath = path.split("/")[path.split("/").length - 1];
+	const authPath = ["sign-in", "sign-up"];
 
 	const handleClick = () => {
 		if (userButtonRef.current) {
@@ -31,53 +35,54 @@ export default function Navbar() {
 			name: "Categories",
 			href: "/categories",
 		},
-
 		{
 			name: "Products",
 			href: "/products",
 		},
 	];
 
-	console.log(user);
+
 
 	return (
-		<nav className="bg-[#f2f2f2] border-b-2 border-black">
+		<nav
+			className={`bg-[#f2f2f2] border-b-2 border-black ${
+				currentPath === "sign-in" || currentPath === "sign-up" ? "hidden" : ""
+			}`}>
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div className="flex items-center justify-between h-16">
 					{/* Logo */}
 					<div className="flex-shrink-0">
 						<span className="text-black text-2xl font-bold">AdminLogo</span>
 					</div>
-					{/* {isSignedIn ? (
-						<> */}
-							<div className="hidden md:block">
-								<div className="flex items-baseline space-x-4">
-									{menuItems.map((item) => (
-										<a
-											key={item.name}
-											href={item.href}
-											className="text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] px-3 py-2 rounded-md text-sm font-medium border-2 border-black">
-											{item.name}
-										</a>
-									))}
-								</div>
-							</div>
 
-							<div className="hidden md:block ">
-								<div className="ml-4 flex items-center md:ml-6 w-full ">
-									<UserButton
-										appearance={{
-											elements: {
-												userButtonAvatarBox: "w-10 h-10", // Custom width and height
-											},
-										}}
-									/>
-								</div>
-							</div>
-						{/* </>
-					) : (
-						<></>
-					)} */}
+					<div className="hidden md:block">
+						<div className="flex items-baseline space-x-4">
+							{menuItems.map((item) => (
+								<a
+									key={item.name}
+									href={item.href}
+									className="text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] px-3 py-2 rounded-md text-sm font-medium border-2 border-black">
+									{item.name}
+								</a>
+							))}
+						</div>
+					</div>
+
+					<div className="hidden md:block">
+						<div className="ml-4 w-10 flex items-center md:ml-6 ">
+							{!isLoaded ? (
+								<Skeleton className="w-10 h-10 rounded-full" />
+							) : (
+								<UserButton
+									appearance={{
+										elements: {
+											userButtonAvatarBox: "w-10 h-10", // Custom width and height
+										},
+									}}
+								/>
+							)}
+						</div>
+					</div>
 
 					<div className="md:hidden">
 						<button
@@ -98,12 +103,12 @@ export default function Navbar() {
 			{isMenuOpen && (
 				<div className="md:hidden">
 					<div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-						{["Dashboard", "Users", "Settings"].map((item) => (
+						{menuItems.map((item) => (
 							<a
-								key={item}
-								href="#"
+								key={item.name}
+								href={item.href}
 								className="text-black hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] block px-3 py-2 rounded-md text-base font-medium border-2 border-black">
-								{item}
+								{item.name}
 							</a>
 						))}
 					</div>
@@ -113,8 +118,12 @@ export default function Navbar() {
 								<User className="h-10 w-10 text-black" />
 							</div>
 							<div className="ml-3">
-								<div className="text-base font-medium text-black">Admin User</div>
-								<div className="text-sm font-medium text-black">admin@example.com</div>
+								<div className="text-base font-medium text-black">
+									{user?.fullName || "Admin User"}
+								</div>
+								<div className="text-sm font-medium text-black">
+									{user?.emailAddresses[0].emailAddress || "admin@example.com"}
+								</div>
 							</div>
 						</div>
 						<div className="mt-3 px-2 space-y-1">

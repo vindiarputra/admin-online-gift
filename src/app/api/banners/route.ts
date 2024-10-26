@@ -1,4 +1,4 @@
-// pages/api/banners.js
+
 import { createClient } from "@supabase/supabase-js";
 
 // Inisialisasi Supabase Client

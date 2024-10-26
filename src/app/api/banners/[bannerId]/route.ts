@@ -44,8 +44,10 @@ export async function PATCH(req: Request, { params }: { params: { bannerId: stri
 // POST: Menambahkan banner baru
 export async function POST(req: Request) {
 	try {
-		const { label, image_url } = await req.json();
-		const { data, error } = await supabase.from("banners").insert([{ label, image_url }]);
+		const { label, image_url, description } = await req.json();
+		const { data, error } = await supabase
+			.from("banners")
+			.insert([{ label, image_url, description }]);
 
 		if (error) {
 			throw new Error("Failed to create banner");

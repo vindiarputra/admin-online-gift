@@ -16,9 +16,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ImageUpload from "../ImageUpload";
 import { usePathname, useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
 	label: z.string().min(1, "Label is required"),
+	description: z.string().min(1, "Description is required"),
 	images: z.string().min(1, "Image is required"),
 });
 
@@ -33,6 +35,7 @@ const FormBanner = () => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			label: "",
+			description: "",
 			images: "",
 		},
 	});
@@ -49,6 +52,7 @@ const FormBanner = () => {
 				if (data.length > 0) {
 					form.reset({
 						label: data[0]?.label || "",
+						description: data[0]?.description || "",
 						images: data[0]?.image_url || "",
 					});
 				}
@@ -62,13 +66,19 @@ const FormBanner = () => {
 
 	async function onSubmit(values: z.infer<typeof formSchema>) {
 		setLoading(true);
+		const payload = {
+			label: values.label,
+			description: values.description,
+			image_url: values.images,
+		};
+
 		if (bannerData.length > 0) {
 			await fetch(`/api/banners/${bannerData[0].id}`, {
 				method: "PATCH",
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ label: values.label, image_url: values.images }),
+				body: JSON.stringify(payload),
 			});
 			setLoading(false);
 			router.push("/banners");
@@ -78,7 +88,7 @@ const FormBanner = () => {
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify({ label: values.label, image_url: values.images }),
+				body: JSON.stringify(payload),
 			});
 			setLoading(false);
 			router.push("/banners");
@@ -98,6 +108,25 @@ const FormBanner = () => {
 									<FormLabel className="tracking-tight font-semibold text-2xl">Label</FormLabel>
 									<FormControl>
 										<Input placeholder="Enter Your Label Banner" className="w-max" {...field} />
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="description"
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel className="tracking-tight font-semibold text-2xl">
+										Description
+									</FormLabel>
+									<FormControl>
+										<Textarea
+											placeholder="Tell us a little bit about yourself"
+											className="resize"
+											{...field}
+										/>
 									</FormControl>
 									<FormMessage />
 								</FormItem>
