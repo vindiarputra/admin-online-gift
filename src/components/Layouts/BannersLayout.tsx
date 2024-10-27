@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type BannersLayoutProps = {
-    banners: any
+    banners: any[]
 }
 
 const BannersLayout: FC<BannersLayoutProps> = ({banners}) => {

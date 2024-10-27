@@ -7,12 +7,12 @@ import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 type CategoriesLayoutProps = {
-	categories: any;
+	categories: any[];
 };
 
 const CategoriesLayout: FC<CategoriesLayoutProps> = ({ categories }) => {
     const router = useRouter();
-    console.log("ini categories", categories)
+    
 	return (
 		<div className="p-6 bg-[#f2f2f2] min-h-screen font-mono">
 			<div className="max-w-4xl mx-auto">

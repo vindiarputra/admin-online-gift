@@ -7,10 +7,10 @@ import { usePathname } from "next/navigation";
 import moment from "moment";
 
 interface DataListsProps {
-	data: any[];
+	data?: any[];
 }
 
-export default function DataLists({ data }: DataListsProps) {
+export default function DataLists({ data = [] }: DataListsProps) {
 	const path = usePathname();
 	const currentPath = path.split("/").pop() ?? "";
 
