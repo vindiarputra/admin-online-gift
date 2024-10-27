@@ -12,25 +12,26 @@ interface DataListsProps {
 
 export default function DataLists({ data }: DataListsProps) {
 	const path = usePathname();
-	const currentPath = path.split("/").pop();
+	const currentPath = path.split("/").pop() ?? "";
 
-	let formattedData;
+	const columnsMap: Record<string, any> = {
+		categories: columnsCategories,
+		banners: columnsBanners,
+	} ;
 
-	if (currentPath === "categories") {
-		const dataCategories: Category[] = data.map((item) => ({
-			id: item.id,
-			label: item.label,
-			image_url: item.image_url,
-			created_at: moment(item.created_at).format("MMMM Do YYYY"),
-		}));
-		formattedData = dataCategories;
-	} else {
-		formattedData = data; // Gunakan data asli jika bukan kategori
-	}
+	const formattedData =
+		currentPath === "categories"
+			? data.map((item) => ({
+					id: item.id,
+					label: item.label,
+					image_url: item.image_url,
+					created_at: moment(item.created_at).format("MMMM Do YYYY"),
+			  }))
+			: data;
 
 	return (
 		<div className="container mx-auto">
-			<DataTable columns={columnsCategories} data={formattedData} />
+			<DataTable columns={columnsMap[currentPath] || columnsCategories} data={formattedData} />
 		</div>
 	);
 }
