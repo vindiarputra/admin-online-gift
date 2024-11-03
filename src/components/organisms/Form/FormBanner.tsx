@@ -10,13 +10,14 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ImageUpload from "../ImageUpload";
 import { usePathname, useRouter } from "next/navigation";
-import { Textarea } from "@/components/ui/textarea";
 
 const formSchema = z.object({
 	label: z.string().min(1, "Label is required"),
@@ -24,7 +25,7 @@ const formSchema = z.object({
 	images: z.string().min(1, "Image is required"),
 });
 
-const FormBanner = () => {
+export default function FormBanner() {
 	const path = usePathname();
 	const currentPath = path.split("/")[path.split("/").length - 1];
 	const [bannerData, setBannerData] = useState<any>(null);
@@ -40,7 +41,6 @@ const FormBanner = () => {
 		},
 	});
 
-	// Fetch banner data
 	useEffect(() => {
 		const fetchBannerData = async () => {
 			try {
@@ -48,7 +48,6 @@ const FormBanner = () => {
 				const data = await res.json();
 				setBannerData(data);
 
-				// Set form default values based on fetched data
 				if (data.length > 0) {
 					form.reset({
 						label: data[0]?.label || "",
@@ -72,7 +71,7 @@ const FormBanner = () => {
 			image_url: values.images,
 		};
 
-		if (bannerData.length > 0) {
+		if (bannerData && bannerData.length > 0) {
 			await fetch(`/api/banners/${bannerData[0].id}`, {
 				method: "PATCH",
 				headers: {
@@ -80,8 +79,6 @@ const FormBanner = () => {
 				},
 				body: JSON.stringify(payload),
 			});
-			setLoading(false);
-			router.push("/banners");
 		} else {
 			await fetch(`/api/banners/new-banner`, {
 				method: "POST",
@@ -90,74 +87,87 @@ const FormBanner = () => {
 				},
 				body: JSON.stringify(payload),
 			});
-			setLoading(false);
-			router.push("/banners");
 		}
+		setLoading(false);
+		router.push("/banners");
 	}
 
 	return (
-		<div className="px-4 mt-8 md:px-16">
-			<Form {...form}>
-				<form onSubmit={form.handleSubmit(onSubmit)}>
-					<div className="inline-flex w-full mb-4 gap-4">
-						<FormField
-							control={form.control}
-							name="label"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="tracking-tight font-semibold text-2xl">Label</FormLabel>
-									<FormControl>
-										<Input placeholder="Enter Your Label Banner" className="w-max" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="description"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="tracking-tight font-semibold text-2xl">
-										Description
-									</FormLabel>
-									<FormControl>
-										<Textarea
-											placeholder="Tell us a little bit about yourself"
-											className="resize"
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="images"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="tracking-tight font-semibold text-2xl">Image</FormLabel>
-									<FormControl>
-										<ImageUpload
-											disabled={loading}
-											onChange={(url) => field.onChange(url)}
-											onRemove={() => field.onChange("")}
-											value={field.value ? [field.value] : []}
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-					</div>
-					<Button type="submit" disabled={loading}>
-						{loading ? "Submitting..." : "Submit"}
-					</Button>
-				</form>
-			</Form>
+		<div className="container mx-auto py-10">
+			<Card className="max-w-4xl mx-auto">
+				<CardHeader>
+					<CardTitle className="text-2xl font-bold text-center">
+						{" "}
+						{currentPath === "new-banner" ? "Create" : "Update"} Banner{" "}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+							<FormField
+								control={form.control}
+								name="label"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="text-base font-semibold">Label</FormLabel>
+										<FormControl>
+											<Input placeholder="Enter Your Label Banner" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="text-base font-semibold">Description</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder="Tell us a little bit about your banner"
+												className="resize-y"
+												{...field}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="images"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="text-base font-semibold">Image</FormLabel>
+										<FormControl>
+											<ImageUpload
+												disabled={loading}
+												onChange={(url) => field.onChange(url)}
+												onRemove={() => field.onChange("")}
+												value={field.value ? [field.value] : []}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<div className="w-full flex gap-4 ">
+								<Button
+									type="button"
+									variant="neobrutalism"
+									className="w-full bg-yellow-100 hover:bg-yellow-200"
+									onClick={() => router.push("/banners")}>
+									Cancel
+								</Button>
+								<Button type="submit" className="w-full" disabled={loading}>
+									{loading ? "Submitting..." : "Submit"}
+								</Button>
+							</div>
+						</form>
+					</Form>
+				</CardContent>
+			</Card>
 		</div>
 	);
-};
-
-export default FormBanner;
+}

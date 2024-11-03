@@ -15,22 +15,38 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Delete } from "lucide-react";
 import { Button } from "../ui/button";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
-const Dialog = ({ bannerId }: { bannerId: string }) => {
-    const router = useRouter();
-	const DeleteDialog = async (bannerId: string) => {
-		const response = await fetch(`/api/banners/${bannerId}`, {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-			},
-		});
+const Dialog = ({ dataId }: { dataId: string }) => {
+	const router = useRouter();
+	const path = usePathname();
+	const currentPath = path.split("/")[path.split("/").length - 1];
 
-        if (response.ok) {
-            router.refresh();
-		} else {
-			console.error("Failed to delete banner");
+	const DeleteDialog = async (dataId: string) => {
+		if (currentPath === "banners") {
+			const response = await fetch(`/api/banners/${dataId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+			if (response.ok) {
+				router.refresh();
+			} else {
+				console.error("Failed to delete banner");
+			}
+		} else if (currentPath === "categories") {
+			const response = await fetch(`/api/categories/${dataId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+			if (response.ok) {
+				router.refresh();
+			} else {
+				console.error("Failed to delete category");
+			}
 		}
 	};
 	return (
@@ -53,7 +69,7 @@ const Dialog = ({ bannerId }: { bannerId: string }) => {
 				</AlertDialogHeader>
 				<AlertDialogFooter>
 					<AlertDialogCancel>Cancel</AlertDialogCancel>
-					<AlertDialogAction onClick={() => DeleteDialog(bannerId)}>Continue</AlertDialogAction>
+					<AlertDialogAction onClick={() => DeleteDialog(dataId)}>Continue</AlertDialogAction>
 				</AlertDialogFooter>
 			</AlertDialogContent>
 		</AlertDialog>

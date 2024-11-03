@@ -12,6 +12,7 @@ interface DataListsProps {
 
 export default function DataLists({ data = [] }: DataListsProps) {
 	const path = usePathname();
+	console.log(data)
 	const currentPath = path.split("/").pop() ?? "";
 
 	const columnsMap: Record<string, any> = {
@@ -24,7 +25,7 @@ export default function DataLists({ data = [] }: DataListsProps) {
 			? data.map((item) => ({
 					id: item.id,
 					label: item.label,
-					image_url: item.image_url,
+					image_url: item.bannerId.image_url,
 					created_at: moment(item.created_at).format("MMMM Do YYYY"),
 			  }))
 			: data;

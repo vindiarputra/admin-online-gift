@@ -10,11 +10,13 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Dialog from "./Dialog";
 
 const CellActions = ({ data }: { data: any }) => {
 	const router = useRouter();
+	const path = usePathname();
+	const currentPath = path.split("/")[path.split("/").length - 1];
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -27,12 +29,12 @@ const CellActions = ({ data }: { data: any }) => {
 				<DropdownMenuSeparator />
 				<DropdownMenuItem
 					className=" cursor-pointer"
-					onClick={() => router.push(`/banners/${data.id}`)}>
+					onClick={() => router.push(`/${currentPath}/${data.id}`)}>
 					<LucideFileEdit className="mr-2 h-4 w-4" />
 					Update
 				</DropdownMenuItem>
 
-				<Dialog bannerId={data.id} />
+				<Dialog dataId={data.id} />
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

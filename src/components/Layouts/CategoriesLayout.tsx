@@ -22,11 +22,11 @@ const CategoriesLayout: FC<CategoriesLayoutProps> = ({ categories }) => {
 					</h1>
 					<button
 						onClick={() => router.push("/categories/new-category")}
-						className="flex items-center px-4 py-2 bg-[#FF69B4] text-black font-bold border-4 border-black rounded-none hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all hover:-translate-y-1 hover:translate-x-1">
+						className="flex items-center px-4 py-2 border-black border-2 p-2.5 bg-[#A6FAFF] hover:bg-[#79F7FF] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:bg-[#00E1EF] rounded-md">
 						<Plus className="mr-2" /> Tambah Category
 					</button>
 				</div>
-                <DataLists data={categories} />
+				<DataLists data={categories} />
 				<ApiEndPoints />
 			</div>
 		</div>

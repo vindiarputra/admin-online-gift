@@ -33,8 +33,8 @@ export default function RootLayout({
 	return (
 		<ClerkProvider>
 			<html lang="en">
-				<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-					<Suspense fallback={<NavbarSkeleton/>}>
+				<body className={`${geistSans.variable} ${geistMono.variable} bg-[#f2f2f2] antialiased`}>
+					<Suspense fallback={<NavbarSkeleton />}>
 						<Navbar />
 					</Suspense>
 					{children}

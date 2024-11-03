@@ -7,7 +7,7 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function GET(req: Request) {
 	try {
-		const { data, error } = await supabase.from("categories").select();
+		const { data, error } = await supabase.from("categories").select(`*, bannerId(*)`);
 		if (error) {
 			throw new Error(error.message);
 		}

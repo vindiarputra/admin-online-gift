@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -21,139 +20,143 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Category } from "@/types";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-
-type FormCategoryProps = {
-	categories: Category[];
-};
+import { supabase } from "@/utils/supabase";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const FormSchema = z.object({
 	label: z.string().min(1, "Label is required"),
-	bannerId: z.string().min(1, "select Banner is required"),
+	bannerId: z.string().min(1, "Select Banner is required"),
 });
 
-export function FormCategory({ categories }: FormCategoryProps) {
+export function FormCategory() {
 	const path = usePathname();
-	const [categoriesData, setCategoriesData] = useState<any>([]);
-    const currentPath = path.split("/")[path.split("/").length - 1];
-    const [loading, setLoading] = useState(false)
-    const router = useRouter()
-
+	const currentPath = path.split("/").pop();
+	const [categoriesData, setCategoriesData] = useState<any[]>([]);
+	const [bannersData, setBannersData] = useState<any[]>([]);
+	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 	});
+	console.log(categoriesData);
 
 	async function onSubmit(values: z.infer<typeof FormSchema>) {
 		setLoading(true);
 		const payload = {
 			label: values.label,
-            bannerId: values.bannerId
+			bannerId: values.bannerId,
 		};
 
-		if (categoriesData.length > 0) {
-			await fetch(`/api/categories/${categoriesData[0].id}`, {
-				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-			});
-			setLoading(false);
-			router.push("/categories");
-		} else {
-			await fetch(`/api/categories/new-banner`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(payload),
-			});
-			setLoading(false);
-			router.push("/categories");
-		}
+		const endpoint =
+			categoriesData.length > 0
+				? `/api/categories/${categoriesData[0].id}`
+				: `/api/categories/new-banner`;
+		const method = categoriesData.length > 0 ? "PATCH" : "POST";
+
+		await fetch(endpoint, {
+			method,
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(payload),
+		});
+
+		setLoading(false);
+		router.push("/categories");
 	}
 
 	useEffect(() => {
-		const fetchCategoriesData = async () => {
+		async function fetchBannersData() {
+			const { data, error } = await supabase.from("banners").select("id, label");
+			if (error) {
+				console.error("Error fetching banners data:", error);
+			} else {
+				setBannersData(data || []);
+			}
+		}
+
+		async function fetchCategoriesData() {
 			try {
 				const res = await fetch(`/api/categories/${currentPath}`);
-                const data = await res.json();
-                console.log(data)
+				const data = await res.json();
 				setCategoriesData(data);
 
-				// Set form default values based on fetched data
 				if (data.length > 0) {
 					form.reset({
-						label: data[0]?.label || "",
-						bannerId: data[0]?.bannerId || "",
+						label: data[0].label || "",
+						bannerId: data[0].bannerId || "",
 					});
-                } else {
-                    return null
-                }
+				}
 			} catch (error) {
-				console.error("Error fetching banner data:", error);
+				console.error("Error fetching category data:", error);
 			}
-		};
+		}
 
+		fetchBannersData();
 		fetchCategoriesData();
 	}, [currentPath, form]);
 
 	return (
-		<div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-			<div className="w-full max-w-lg bg-white shadow-md rounded-lg p-8">
-				<h2 className="text-2xl font-bold text-center mb-6">Create a Category</h2>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-						<FormField
-							control={form.control}
-							name="label"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="font-semibold">Label</FormLabel>
-									<FormControl>
-										<Input placeholder="Enter Your Label Category" className="w-full" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="bannerId"
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel className="tracking-tight font-semibold">Banner</FormLabel>
-									<Select
-										onValueChange={(value) => field.onChange(value)}
-										defaultValue={field.value}>
+		<div className="container mx-auto py-10">
+			<Card className="max-w-md mx-auto">
+				<CardHeader>
+					<CardTitle className="text-2xl font-bold text-center">
+						{categoriesData.length > 0 ? "Edit Category" : "Create a Category"}
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+							<FormField
+								control={form.control}
+								name="label"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="font-semibold">Label</FormLabel>
 										<FormControl>
-											<SelectTrigger>
-												<SelectValue placeholder="Choose Banner" />
-											</SelectTrigger>
+											<Input placeholder="Enter Your Label Category" {...field} />
 										</FormControl>
-										<SelectContent>
-											{categories.map((item) => (
-												<SelectItem key={item.id} value={item.id}>
-													{item.label}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-						<Button
-							type="submit"
-							className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 rounded transition duration-200">
-							Submit
-						</Button>
-					</form>
-				</Form>
-			</div>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="bannerId"
+								render={({ field }) => (
+									<FormItem>
+										<FormLabel className="font-semibold">Banner</FormLabel>
+										<Select onValueChange={field.onChange} defaultValue={field.value}>
+											<FormControl>
+												<SelectTrigger>
+													<SelectValue placeholder="Choose Banner" />
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent>
+												{bannersData.map((item) => (
+													<SelectItem key={item.id} value={item.id}>
+														{item.label}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<div className="w-full flex gap-4" >
+								<Button type="button" className="w-full bg-yellow-100 hover:bg-yellow-200" variant={"neobrutalism"} onClick={() => router.back()}>
+									Cancel
+								</Button>
+								<Button type="submit" className="w-full" disabled={loading}>
+									{loading ? "Submitting..." : "Submit"}
+								</Button>
+							</div>
+						</form>
+					</Form>
+				</CardContent>
+			</Card>
 		</div>
 	);
 }

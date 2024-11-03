@@ -6,14 +6,15 @@ import { supabase } from "@/utils/supabase";
 
 export default async function CategoriesPage() {
 	async function fetchCategoriesData() {
-		const { data, error } = await supabase.from("banners").select();
+		const { data, error } = await supabase.from("categories").select(`*, bannerId(*)`);
 		if (error) {
-			console.error("Error fetching banner data:", error);
+			console.error("Error fetching categories data:", error);
 			return [];
 		}
 		return data || [];
 	}
 	const categoriesData = await fetchCategoriesData();
+	console.log(categoriesData)
 
 	// 	if (newCategoryLabel.trim()) {
 	// 		const newCategory: TableDataType["categories"][number] = {

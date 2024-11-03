@@ -52,7 +52,7 @@ export default function Navbar() {
 				<div className="flex items-center justify-between h-16">
 					{/* Logo */}
 					<div className="flex-shrink-0">
-						<span className="text-black text-2xl font-bold">AdminLogo</span>
+						<span className="text-black text-2xl font-bold">Admin</span>
 					</div>
 
 					<div className="hidden md:block">
