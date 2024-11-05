@@ -26,3 +26,14 @@ export interface Category {
 	label: string,
 	created_at: string
 }
+
+export interface Product {
+	id: string,
+	label: string,
+	price: string,
+	categoryId: string,
+	isFeatured: boolean,
+	isNew: boolean,
+	onSale: boolean,
+	created_at: string,
+}

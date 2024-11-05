@@ -47,6 +47,18 @@ const Dialog = ({ dataId }: { dataId: string }) => {
 			} else {
 				console.error("Failed to delete category");
 			}
+		} else if (currentPath === "products") {
+			const response = await fetch(`/api/products/${dataId}`, {
+				method: "DELETE",
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+			if (response.ok) {
+				router.refresh();
+			} else {
+				console.error("Failed to delete product");
+			}
 		}
 	};
 	return (

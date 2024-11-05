@@ -1,7 +1,7 @@
 "use client";
 
 import { Category } from "@/types";
-import { columnsBanners, columnsCategories } from "./Columns";
+import { columnsBanners, columnsCategories, columnsProducts } from "./Columns";
 import { DataTable } from "./DataTable";
 import { usePathname } from "next/navigation";
 import moment from "moment";
@@ -12,13 +12,20 @@ interface DataListsProps {
 
 export default function DataLists({ data = [] }: DataListsProps) {
 	const path = usePathname();
-	console.log(data)
 	const currentPath = path.split("/").pop() ?? "";
 
 	const columnsMap: Record<string, any> = {
 		categories: columnsCategories,
 		banners: columnsBanners,
-	} ;
+		products: columnsProducts,
+	};
+
+	const priceFormatted = (price: number) => {
+		return new Intl.NumberFormat("id-ID", {
+			style: "currency",
+			currency: "IDR",
+		}).format(price);
+	};
 
 	const formattedData =
 		currentPath === "categories"
@@ -26,6 +33,12 @@ export default function DataLists({ data = [] }: DataListsProps) {
 					id: item.id,
 					label: item.label,
 					image_url: item.bannerId.image_url,
+					created_at: moment(item.created_at).format("MMMM Do YYYY"),
+			  }))
+			: data || currentPath === "products"
+			? data.map((item) => ({
+					...item,
+					price: priceFormatted(item.price),
 					created_at: moment(item.created_at).format("MMMM Do YYYY"),
 			  }))
 			: data;

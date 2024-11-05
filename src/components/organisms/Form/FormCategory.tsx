@@ -41,7 +41,6 @@ export function FormCategory() {
 	const form = useForm<z.infer<typeof FormSchema>>({
 		resolver: zodResolver(FormSchema),
 	});
-	console.log(categoriesData);
 
 	async function onSubmit(values: z.infer<typeof FormSchema>) {
 		setLoading(true);
@@ -53,7 +52,7 @@ export function FormCategory() {
 		const endpoint =
 			categoriesData.length > 0
 				? `/api/categories/${categoriesData[0].id}`
-				: `/api/categories/new-banner`;
+				: `/api/categories/new-category`;
 		const method = categoriesData.length > 0 ? "PATCH" : "POST";
 
 		await fetch(endpoint, {
