@@ -14,7 +14,6 @@ export default async function CategoriesPage() {
 		return data || [];
 	}
 	const categoriesData = await fetchCategoriesData();
-	console.log(categoriesData)
 
 	// 	if (newCategoryLabel.trim()) {
 	// 		const newCategory: TableDataType["categories"][number] = {

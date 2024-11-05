@@ -25,7 +25,6 @@ export const handleDeleteImage = async (publicId: string, onRemove?: (value: str
 		const timestamp = new Date().getTime();
 		const apiKey = process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY;
 		const apiSecret = process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET!!;
-		console.log(apiSecret);
 
 		const signature = generateSHA1(generateSignature(publicId, apiSecret));
 		const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`;
@@ -50,7 +49,6 @@ export const handleDeleteImage = async (publicId: string, onRemove?: (value: str
 
 			const result = await response.json();
 			if (onRemove) onRemove(publicUrl!);
-			console.log("Image deleted:", result);
 		} catch (error) {
 			console.error("Something went wrong, please try again later.", error);
 		}

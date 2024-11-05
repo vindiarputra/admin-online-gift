@@ -279,7 +279,6 @@ export default function FormProduct() {
 													const newImage = { url: url };
 													const updatedImages = [...currentImages, newImage];
 													form.setValue("images_url", updatedImages, { shouldValidate: true });
-													console.log("Updated images:", updatedImages);
 												}}
 												onRemove={(url) =>
 													field.onChange([...field.value.filter((current) => current.url !== url)])

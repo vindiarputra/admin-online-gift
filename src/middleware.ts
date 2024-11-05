@@ -18,7 +18,7 @@ export default clerkMiddleware(
 
 			// Redirect non-admins trying to access protected routes
 			if (isProtectedRoute(req) && role !== "admin") {
-				console.log("kamu bukan admin");
+	
 				return NextResponse.redirect(new URL("/sign-in", req.url));
 			}
 			// Allow access if user is authenticated and has required role

@@ -29,8 +29,6 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ disabled, onChange, onRemove,
 		return null;
 	}
 
-	// console.log(value);
-
 	const getPublicIdFromUrls = (urls: string[]): string[] => {
 		return urls.map((url) => {
 			const parts = url.split("/");

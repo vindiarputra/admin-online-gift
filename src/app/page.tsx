@@ -1,51 +1,79 @@
-import { BarChart, Image, LayoutGrid, Package, ShoppingBag, Users } from "lucide-react";
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
+import { LayoutGrid, Package, TicketSlash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 
-// Mock data (replace with actual data fetching in a real application)
-const summaryData = [
-	{ title: "Total Revenue", value: "$45,231.89", icon: BarChart },
-	{ title: "Products", value: "204", icon: Package },
-	{ title: "Categories", value: "12", icon: LayoutGrid },
-	{ title: "Customers", value: "2,341", icon: Users },
-];
+import { supabase } from "@/utils/supabase";
+import Image from "next/image";
 
-const banners = [
-	{ id: 1, name: "Summer Sale", image: "https://picsum.photos/1920/600?random=1" },
-	{ id: 2, name: "New Arrivals", image: "https://picsum.photos/1920/600?random=2" },
-	{ id: 3, name: "Clearance", image: "https://picsum.photos/1920/600?random=3" },
-];
+const fetchBannerData = async () => {
+	const { data, error } = await supabase.from("banners").select();
 
-const categories = [
-	{ id: 1, name: "Electronics", productCount: 50 },
-	{ id: 2, name: "Clothing", productCount: 120 },
-	{ id: 3, name: "Home & Garden", productCount: 75 },
-	{ id: 4, name: "Sports", productCount: 40 },
-	{ id: 5, name: "Books", productCount: 100 },
-	{ id: 6, name: "Toys", productCount: 60 },
-];
+	if (error) {
+		console.error(error);
+		return [];
+	}
+	return data || [];
+};
 
-const products = [
-	{ id: 1, name: "Smartphone X", category: "Electronics", price: 599.99, stock: 50 },
-	{ id: 2, name: "Designer T-shirt", category: "Clothing", price: 29.99, stock: 100 },
-	{ id: 3, name: "Garden Tools Set", category: "Home & Garden", price: 89.99, stock: 30 },
-	{ id: 4, name: "Fitness Tracker", category: "Sports", price: 79.99, stock: 75 },
-	{ id: 5, name: "Bestseller Novel", category: "Books", price: 14.99, stock: 200 },
-];
+const fetchCategoriesData = async () => {
+	const { data, error } = await supabase.from("categories").select();
 
-export default function Dashboard() {
+	if (error) {
+		console.error(error);
+		return [];
+	}
+	return data || [];
+};
+
+const fetchProductsData = async () => {
+	const { data, error } = await supabase.from("products").select();
+
+	if (error) {
+		console.error(error);
+		return [];
+	}
+	return data || [];
+};
+
+export default async function Dashboard() {
+	const banners = await fetchBannerData();
+	const categories = await fetchCategoriesData();
+	const products = await fetchProductsData();
+
+	const totalProductsPerCategory = products.reduce((productCountMap, product) => {
+		const categoryId = product.categoryId;
+		if (!productCountMap[categoryId]) {
+			productCountMap[categoryId] = 0;
+		}
+		productCountMap[categoryId] += 1;
+
+		return productCountMap;
+	}, {});
+
+	const categoriesWithProductCount = categories.map((category) => ({
+		...category,
+		productCount: totalProductsPerCategory[category.id] || 0,
+	}));
+
+	const summaryData = [
+		{
+			title: "Products",
+			value: products.length,
+			icon: Package,
+		},
+		{
+			title: "Categories",
+			value: categories.length,
+			icon: LayoutGrid,
+		},
+		{
+			title: "Banners",
+			value: banners.length,
+			icon: TicketSlash,
+		},
+	];
+
 	return (
-		<div className="flex flex-col space-y-6 p-8">
+		<div className="flex flex-col space-y-6 p-8 px-16">
 			<h1 className="text-3xl font-bold">Dashboard</h1>
 
 			{/* Summary Cards */}
@@ -71,12 +99,14 @@ export default function Dashboard() {
 				<CardContent className="flex gap-4 overflow-x-auto pb-4">
 					{banners.map((banner) => (
 						<div key={banner.id} className="flex-shrink-0">
-							<img
-								src={banner.image}
-								alt={banner.name}
+							<Image
+								width={300}
+								height={100}
+								src={banner.image_url}
+								alt={banner.label}
 								className="h-[100px] w-[300px] rounded-md object-cover"
 							/>
-							<p className="mt-2 text-sm font-medium">{banner.name}</p>
+							<p className="mt-2 text-sm font-medium">{banner.label}</p>
 						</div>
 					))}
 				</CardContent>
@@ -89,57 +119,16 @@ export default function Dashboard() {
 				</CardHeader>
 				<CardContent>
 					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-						{categories.map((category) => (
+						{categoriesWithProductCount.map((category) => (
 							<div key={category.id} className="flex items-center space-x-4 rounded-md border p-4">
 								<LayoutGrid className="h-6 w-6 text-muted-foreground" />
 								<div>
-									<p className="text-sm font-medium leading-none">{category.name}</p>
+									<p className="text-sm font-medium leading-none">{category.label}</p>
 									<p className="text-sm text-muted-foreground">{category.productCount} products</p>
 								</div>
 							</div>
 						))}
 					</div>
-				</CardContent>
-			</Card>
-
-			{/* Products Table */}
-			<Card>
-				<CardHeader>
-					<div className="flex items-center justify-between">
-						<CardTitle>Products</CardTitle>
-						<Button size="sm">
-							<ShoppingBag className="mr-2 h-4 w-4" />
-							Add Product
-						</Button>
-					</div>
-				</CardHeader>
-				<CardContent>
-					<Table>
-						<TableHeader>
-							<TableRow>
-								<TableHead>Name</TableHead>
-								<TableHead>Category</TableHead>
-								<TableHead>Price</TableHead>
-								<TableHead>Stock</TableHead>
-								<TableHead>Actions</TableHead>
-							</TableRow>
-						</TableHeader>
-						<TableBody>
-							{products.map((product) => (
-								<TableRow key={product.id} className="px-10">
-									<TableCell className="font-medium">{product.name}</TableCell>
-									<TableCell>{product.category}</TableCell>
-									<TableCell>${product.price.toFixed(2)}</TableCell>
-									<TableCell>{product.stock}</TableCell>
-									<TableCell>
-										<Button variant="ghost" size="sm" asChild>
-											<Link href={`/products/${product.id}`}>Edit</Link>
-										</Button>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
 				</CardContent>
 			</Card>
 		</div>

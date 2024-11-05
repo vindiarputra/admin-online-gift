@@ -120,7 +120,6 @@ export async function DELETE(req: Request, { params }: { params: { bannerId: str
 		}
 
 		const cloudinaryResult = await cloudinaryResponse.json();
-		console.log("Image deleted from Cloudinary:", cloudinaryResult);
 
 		// Delete the banner from the database
 		const deleteResponse = await supabase.from("banners").delete().eq("id", params.bannerId);
