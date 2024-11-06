@@ -6,6 +6,7 @@ import { SignedOut, useClerk, UserButton, useUser } from "@clerk/nextjs";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
+import Image from "next/image";
 
 export default function Navbar() {
 	const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,8 +42,6 @@ export default function Navbar() {
 		},
 	];
 
-
-
 	return (
 		<nav
 			className={`bg-[#f2f2f2] border-b-2 border-black ${
@@ -67,7 +66,6 @@ export default function Navbar() {
 							))}
 						</div>
 					</div>
-
 					<div className="hidden md:block">
 						<div className="ml-4 w-10 flex items-center md:ml-6 ">
 							{!isLoaded ? (
@@ -130,6 +128,7 @@ export default function Navbar() {
 							<Button variant={"outline"} className="w-full justify-start">
 								Profile
 							</Button>
+
 							<SignedOut>
 								<Button
 									variant={"outline"}

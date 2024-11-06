@@ -12,13 +12,19 @@ export default clerkMiddleware(
 
 		const { userId } = auth();
 
+		if (req.nextUrl.pathname.startsWith("/api") && !userId) {
+			return NextResponse.json(
+				{ error: "Unauthorized - Please sign in to access this resource" },
+				{ status: 401 }
+			);
+		}
+
 		if (userId) {
 			const user = await clerkClient().users.getUser(userId);
 			const role = (user.publicMetadata.role as string) || undefined;
 
 			// Redirect non-admins trying to access protected routes
 			if (isProtectedRoute(req) && role !== "admin") {
-	
 				return NextResponse.redirect(new URL("/sign-in", req.url));
 			}
 			// Allow access if user is authenticated and has required role

@@ -1,7 +1,7 @@
 import { supabase } from "@/utils/supabase";
 import { NextResponse } from "next/server";
 import crypto from "crypto";
-import { revalidatePath } from "next/cache";
+
 
 // GET: Mengambil data banner berdasarkan bannerId
 export async function GET(req: Request, { params }: { params: { bannerId: string } }) {
