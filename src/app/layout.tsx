@@ -31,7 +31,17 @@ export default function RootLayout({
 }>) {
 
 	return (
-		<ClerkProvider>
+		<ClerkProvider
+			appearance={{
+				layout: {
+					unsafe_disableDevelopmentModeWarnings: true,
+				},
+				elements: {
+					footer: {
+						display: "none",
+					},
+				},
+			}}>
 			<html lang="en">
 				<body className={`${geistSans.variable} ${geistMono.variable} bg-[#f2f2f2] antialiased`}>
 					<Suspense fallback={<NavbarSkeleton />}>
