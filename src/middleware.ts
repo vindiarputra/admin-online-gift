@@ -12,12 +12,12 @@ export default clerkMiddleware(
 
 		const { userId } = auth();
 
-		if (req.nextUrl.pathname.startsWith("/api") && !userId) {
-			return NextResponse.json(
-				{ error: "Unauthorized - Please sign in to access this resource" },
-				{ status: 401 }
-			);
-		}
+		// if (req.nextUrl.pathname.startsWith("/api") && !userId && req.method !== "GET") {
+		// 	return NextResponse.json(
+		// 		{ error: "Unauthorized - Please sign in to access this resource" },
+		// 		{ status: 401 }
+		// 	);
+		// }
 
 		if (userId) {
 			const user = await clerkClient().users.getUser(userId);
