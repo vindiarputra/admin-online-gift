@@ -1,13 +1,13 @@
 "use client"
 
 import React, { FC } from 'react'
-import ApiEndPoints from '../organisms/ApiEndPoints';
 import DataLists from '../organisms/DataList/DataLists';
 import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { Banner } from '@/types';
 
 type BannersLayoutProps = {
-    banners: any[]
+    banners: Banner[]
 }
 
 const BannersLayout: FC<BannersLayoutProps> = ({banners}) => {
@@ -26,7 +26,6 @@ const BannersLayout: FC<BannersLayoutProps> = ({banners}) => {
 					</button>
 				</div>
 				<DataLists data={banners} />
-				{/* <ApiEndPoints /> */}
 			</div>
 		</div>
 	);

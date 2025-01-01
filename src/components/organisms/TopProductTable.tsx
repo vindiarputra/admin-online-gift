@@ -13,7 +13,7 @@ import {
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -25,6 +25,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import PaginationControls from "../moleculs/PaginationControls";
 
 interface OrderItem {
 	id: string;
@@ -96,8 +97,8 @@ const columns: ColumnDef<ProductSummary>[] = [
 		accessorKey: "quantity",
 		header: ({ column }) => {
 			return (
-                <Button
-                    className="flex place-self-center"
+				<Button
+					className="flex place-self-center"
 					variant="ghost"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
 					Quantity Sold
@@ -109,7 +110,6 @@ const columns: ColumnDef<ProductSummary>[] = [
 			return <div className="text-center">{row.getValue("quantity")}</div>;
 		},
 	},
-
 ];
 
 interface TopProductTableProps {
@@ -121,7 +121,19 @@ export function TopProductTable({ orders }: TopProductTableProps) {
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});
-	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 }); // Set pagination state
+	const [{ pageIndex, pageSize }, setPagination] = useState({
+		pageIndex: 0,
+		pageSize: 10,
+	});
+
+	const pagination = useMemo(
+		() => ({
+			pageIndex,
+			pageSize,
+		}),
+		[pageIndex, pageSize]
+	);
+	
 
 	const data = useMemo(() => {
 		const productMap = new Map<string, ProductSummary>();
@@ -171,12 +183,15 @@ export function TopProductTable({ orders }: TopProductTableProps) {
 			</CardHeader>
 			<CardContent>
 				<div className="mb-4 flex items-center gap-4">
-					<Input
-						placeholder="Filter products..."
-						value={(table.getColumn("label")?.getFilterValue() as string) ?? ""}
-						onChange={(event) => table.getColumn("label")?.setFilterValue(event.target.value)}
-						className="max-w-sm"
-					/>
+					<div className="relative max-w-sm">
+						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+						<Input
+							placeholder="Filter products..."
+							value={(table.getColumn("label")?.getFilterValue() as string) ?? ""}
+							onChange={(event) => table.getColumn("label")?.setFilterValue(event.target.value)}
+							className="w-96 pl-9 border-black border-2  focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
+						/>
+					</div>
 				</div>
 				<div className="rounded-md border">
 					<Table>
@@ -216,26 +231,8 @@ export function TopProductTable({ orders }: TopProductTableProps) {
 						</TableBody>
 					</Table>
 				</div>
-				<div className="flex items-center justify-end space-x-2 py-4">
-					<div className="flex-1 text-sm text-muted-foreground">
-						Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-					</div>
-					<div className="space-x-2">
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.previousPage()}
-							disabled={!table.getCanPreviousPage()}>
-							Previous
-						</Button>
-						<Button
-							variant="outline"
-							size="sm"
-							onClick={() => table.nextPage()}
-							disabled={!table.getCanNextPage()}>
-							Next
-						</Button>
-					</div>
+				<div className="flex items-center justify-between space-x-2 py-4">
+					<PaginationControls table={table} />
 				</div>
 			</CardContent>
 		</Card>

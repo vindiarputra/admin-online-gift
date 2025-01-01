@@ -27,7 +27,6 @@ const CategoriesLayout: FC<CategoriesLayoutProps> = ({ categories }) => {
 					</button>
 				</div>
 				<DataLists data={categories} />
-				<ApiEndPoints />
 			</div>
 		</div>
 	);

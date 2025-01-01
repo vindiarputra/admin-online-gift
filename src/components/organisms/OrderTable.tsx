@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
 	ColumnDef,
 	flexRender,
@@ -11,6 +11,7 @@ import {
 	ColumnFiltersState,
 	getFilteredRowModel,
 	getPaginationRowModel,
+	VisibilityState,
 } from "@tanstack/react-table";
 import {
 	Table,
@@ -20,97 +21,43 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import {
+	DropdownMenu,
+	DropdownMenuCheckboxItem,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import Image from "next/image";
-import {
-	ChevronDown,
-	ChevronUp,
-	ChevronsUpDown,
-	Search,
-	Clock,
-	ClockIcon as ClockRewind,
-} from "lucide-react";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { ChevronDown, Filter, Search } from "lucide-react";
+
 import { Item, Order } from "@/types";
+import AscSortTableButton from "../Atoms/AscSortTableButton";
+import DateSortTableButton from "../Atoms/DateSortTableButton";
+import PaginationControls from "../moleculs/PaginationControls";
 
-interface SortButtonProps {
-	column: any;
-	children: React.ReactNode;
+interface CustomColumnMeta {
+	label?: string;
 }
 
-function SortButton({ column, children }: SortButtonProps) {
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
-					<span>{children}</span>
-					{column.getIsSorted() === "desc" ? (
-						<ChevronDown className="ml-2 h-4 w-4" />
-					) : column.getIsSorted() === "asc" ? (
-						<ChevronUp className="ml-2 h-4 w-4" />
-					) : (
-						<ChevronsUpDown className="ml-2 h-4 w-4" />
-					)}
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start">
-				<DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-					<ChevronUp className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-					Ascending
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-					<ChevronDown className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-					Descending
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
-}
-
-function DateSortButton({ column }: { column: any }) {
-	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="sm" className="-ml-3 h-8 data-[state=open]:bg-accent">
-					<span>Order Date</span>
-					{column.getIsSorted() === "desc" ? (
-						<Clock className="ml-2 h-4 w-4" />
-					) : column.getIsSorted() === "asc" ? (
-						<ClockRewind className="ml-2 h-4 w-4" />
-					) : (
-						<ChevronsUpDown className="ml-2 h-4 w-4" />
-					)}
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start">
-				<DropdownMenuItem onClick={() => column.toggleSorting(true)}>
-					<Clock className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-					Newest
-				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => column.toggleSorting(false)}>
-					<ClockRewind className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-					Oldest
-				</DropdownMenuItem>
-			</DropdownMenuContent>
-		</DropdownMenu>
-	);
+declare module "@tanstack/react-table" {
+	interface ColumnMeta<TData, TValue> extends CustomColumnMeta {}
 }
 
 const columns: ColumnDef<Order>[] = [
 	{
 		accessorKey: "id",
-		header: ({ column }) => <SortButton column={column}>Order ID</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Order ID</AscSortTableButton>,
+		meta: { label: "Order ID" },
 	},
 	{
 		accessorKey: "created_at",
-		header: ({ column }) => <DateSortButton column={column} />,
+		header: ({ column }) => <DateSortTableButton column={column} />,
 		cell: ({ row }) => {
 			const date = new Date(row.getValue("created_at"));
 			return date.toLocaleDateString("id-ID", {
@@ -121,26 +68,31 @@ const columns: ColumnDef<Order>[] = [
 				minute: "2-digit",
 			});
 		},
+		meta: { label: "Order Date" },
 	},
 	{
 		accessorKey: "clerk_id.name",
-		header: ({ column }) => <SortButton column={column}>Customer Name</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Customer Name</AscSortTableButton>,
+		meta: { label: "Customer Name" },
 	},
 	{
 		accessorKey: "clerk_id.email",
-		header: ({ column }) => <SortButton column={column}>Customer Email</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Customer Email</AscSortTableButton>,
+		meta: { label: "Customer Email" },
 	},
 	{
 		accessorKey: "clerk_id.tlp",
-		header: ({ column }) => <SortButton column={column}>Customer Phone</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Customer Phone</AscSortTableButton>,
+		meta: { label: "Customer Phone" },
 	},
 	{
 		accessorKey: "clerk_id.address",
 		header: "Customer Address",
+		meta: { label: "Customer Address" },
 	},
 	{
 		accessorKey: "gross_amount",
-		header: ({ column }) => <SortButton column={column}>Total Amount</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Total Amount</AscSortTableButton>,
 		cell: ({ row }) => {
 			const grossAmount = row.getValue("gross_amount") as number;
 			return new Intl.NumberFormat("id-ID", {
@@ -148,14 +100,17 @@ const columns: ColumnDef<Order>[] = [
 				currency: "IDR",
 			}).format(grossAmount);
 		},
+		meta: { label: "Total Amount" },
 	},
 	{
 		accessorKey: "payment_type",
-		header: ({ column }) => <SortButton column={column}>Payment Type</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Payment Type</AscSortTableButton>,
+		meta: { label: "Payment Type" },
 	},
 	{
 		accessorKey: "bank",
-		header: ({ column }) => <SortButton column={column}>Bank</SortButton>,
+		header: ({ column }) => <AscSortTableButton column={column}>Bank</AscSortTableButton>,
+		meta: { label: "Bank" },
 	},
 	{
 		accessorKey: "item",
@@ -182,6 +137,7 @@ const columns: ColumnDef<Order>[] = [
 				</div>
 			);
 		},
+		meta: { label: "Item" },
 	},
 ];
 
@@ -193,7 +149,20 @@ export function OrderTable({ data }: OrderTableProps) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [rowSelection, setRowSelection] = useState({});
-	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 5 }); // Set pagination state
+	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+	const [{ pageIndex, pageSize }, setPagination] = useState({
+			pageIndex: 0,
+			pageSize: 10,
+		});
+	
+		const pagination = useMemo(
+			() => ({
+				pageIndex,
+				pageSize,
+			}),
+			[pageIndex, pageSize]
+		);
+	
 
 	const table = useReactTable({
 		data,
@@ -205,11 +174,13 @@ export function OrderTable({ data }: OrderTableProps) {
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),
 		onRowSelectionChange: setRowSelection,
+		onColumnVisibilityChange: setColumnVisibility,
 		state: {
 			sorting,
 			columnFilters,
 			rowSelection,
 			pagination,
+			columnVisibility,
 		},
 		onPaginationChange: setPagination, // Update pagination state when changed
 	});
@@ -220,14 +191,37 @@ export function OrderTable({ data }: OrderTableProps) {
 				<div className="relative max-w-sm">
 					<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
 					<Input
-						placeholder="Filter orders..."
+						placeholder="Filter by Customer Name"
 						value={(table.getColumn("clerk_id.name")?.getFilterValue() as string) ?? ""}
 						onChange={(event) =>
 							table.getColumn("clerk_id.name")?.setFilterValue(event.target.value)
 						}
-						className="pl-9"
+						className="w-96 pl-9 border-black border-2  focus:outline-none focus:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[2px_2px_0px_rgba(0,0,0,1)] rounded-md"
 					/>
 				</div>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="outline" className="ml-auto">
+							Columns <Filter className="ml-2 h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						{table
+							.getAllColumns()
+							.filter((column) => column.getCanHide())
+							.map((column) => {
+								return (
+									<DropdownMenuCheckboxItem
+										key={column.id}
+										className="capitalize"
+										checked={column.getIsVisible()}
+										onCheckedChange={(value) => column.toggleVisibility(!!value)}>
+										{column.columnDef.meta?.label || column.id}
+									</DropdownMenuCheckboxItem>
+								);
+							})}
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</div>
 			<div className="rounded-md border">
 				<Table>
@@ -265,26 +259,8 @@ export function OrderTable({ data }: OrderTableProps) {
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex items-center justify-end space-x-2 py-4">
-				<div className="flex-1 text-sm text-muted-foreground">
-					Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
-				</div>
-				<div className="space-x-2">
-					<Button
-						variant="neobrutalism"
-						size="sm"
-						onClick={() => table.previousPage()}
-						disabled={!table.getCanPreviousPage()}>
-						Previous
-					</Button>
-					<Button
-						variant="neobrutalism"
-						size="sm"
-						onClick={() => table.nextPage()}
-						disabled={!table.getCanNextPage()}>
-						Next
-					</Button>
-				</div>
+			<div className="flex items-center justify-between space-x-2 py-4">
+				<PaginationControls table={table} />
 			</div>
 		</div>
 	);

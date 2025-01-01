@@ -27,7 +27,6 @@ const ProductsLayout: FC<ProductsLayoutProps> = ({ products }) => {
 					</button>
 				</div>
 				<DataLists data={products} />
-				<ApiEndPoints />
 			</div>
 		</div>
 	);

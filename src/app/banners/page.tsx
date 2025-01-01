@@ -1,15 +1,19 @@
 import BannersLayout from "@/components/Layouts/BannersLayout";
-import { supabase } from "@/utils/supabase";
+import { Banner } from "@/types";
+import { headers } from "next/headers";
 
 export default async function BannersPage() {
-	async function fetchBannerData() {
-		const { data, error } = await supabase.from("banners").select();
-		if (error) {
-			console.error("Error fetching banner data:", error);
-			return [];
+	const headersList = headers();
+	const host = headersList.get("host");
+	const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+	const baseUrl = `${protocol}://${host}`;
+	const fetchBannerData = async (): Promise<Banner[]> => {
+		const res = await fetch(`${baseUrl}/api/banners`);
+		if (!res.ok) {
+			throw new Error("Failed to fetch banner data");
 		}
-		return data || [];
-	}
+		return res.json();
+	};
 	const bannersData = await fetchBannerData();
 
 	return <BannersLayout banners={bannersData} />;

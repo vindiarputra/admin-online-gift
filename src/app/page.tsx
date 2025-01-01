@@ -1,4 +1,4 @@
-import { LayoutGrid, Package, TicketSlash } from "lucide-react";
+import { BarChart, DollarSign, LayoutGrid, Package, ShoppingCart, TicketSlash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import RevenueChart from "@/components/organisms/RevenueChart";
@@ -93,6 +93,22 @@ export default async function Dashboard() {
 				value: banners.length,
 				icon: TicketSlash,
 			},
+			{
+				title: "Total Revenue",
+				value: `Rp ${totalRevenue.toLocaleString("id-ID")}`,
+				icon: DollarSign,
+			},
+
+			{
+				title: "Orders",
+				value: totalOrders,
+				icon: ShoppingCart,
+			},
+			{
+				title: "Average Order Value",
+				value: `Rp ${averageOrderValue.toLocaleString("id-ID")}`,
+				icon: BarChart,
+			},
 		];
 
 		return (
@@ -112,33 +128,6 @@ export default async function Dashboard() {
 							</CardContent>
 						</Card>
 					))}
-
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">Rp {totalRevenue.toLocaleString("id-ID")}</div>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Orders</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">{totalOrders}</div>
-						</CardContent>
-					</Card>
-					<Card>
-						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-							<CardTitle className="text-sm font-medium">Average Order Value</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="text-2xl font-bold">
-								Rp {averageOrderValue.toLocaleString("id-ID")}
-							</div>
-						</CardContent>
-					</Card>
 				</div>
 
 				<div className="grid grid-cols-1 gap-6 mb-6">

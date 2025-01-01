@@ -1,33 +1,19 @@
-
-
 import CategoriesLayout from "@/components/Layouts/CategoriesLayout";
-import { supabase } from "@/utils/supabase";
-
+import { headers } from "next/headers";
 
 export default async function CategoriesPage() {
+	const headersList = headers();
+	const host = headersList.get("host");
+	const protocol = process.env.NODE_ENV === "development" ? "http" : "https";
+	const baseUrl = `${protocol}://${host}`;
 	async function fetchCategoriesData() {
-		const { data, error } = await supabase.from("categories").select(`*, bannerId(*)`);
-		if (error) {
-			console.error("Error fetching categories data:", error);
-			return [];
+		const res = await fetch(`${baseUrl}/api/categories`);
+		if (!res.ok) {
+			throw new Error("Failed to fetch banner data");
 		}
-		return data || [];
+		return res.json();
 	}
 	const categoriesData = await fetchCategoriesData();
 
-	// 	if (newCategoryLabel.trim()) {
-	// 		const newCategory: TableDataType["categories"][number] = {
-	// 			id: "",
-	// 			label: newCategoryLabel.trim(),
-	// 		};
-	// 		setCategories([...categories, newCategory]);
-	// 		setNewCategoryLabel("");
-	// 		setIsAddingCategory(false);
-	// 	}
-	// };
-
-	// const deleteCategory = (id: string) => {
-	// 	setCategories(categories.filter((category) => category.id !== id));
-	// };
 	return <CategoriesLayout categories={categoriesData} />;
 }

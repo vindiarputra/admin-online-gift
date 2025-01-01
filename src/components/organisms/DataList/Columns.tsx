@@ -1,5 +1,6 @@
 "use client";
 
+import AscSortTableButton from "@/components/Atoms/AscSortTableButton";
 import CellActions from "@/components/moleculs/CellActions";
 import { Banner, Category, Product } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
@@ -7,12 +8,13 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const columnsBanners: ColumnDef<Banner>[] = [
 	{
-		accessorKey: "id",
-		header: "id",
+		accessorKey: "no",
+		header: "No",
+		cell: ({ row }) => row.index + 1,
 	},
 	{
 		accessorKey: "label",
-		header: "Label",
+		header: ({column}) => <AscSortTableButton column={column}>Label</AscSortTableButton>,
 	},
 	{
 		accessorKey: "description",
