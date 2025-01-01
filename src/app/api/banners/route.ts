@@ -1,19 +1,20 @@
-
-import { createClient } from "@supabase/supabase-js";
-
-// Inisialisasi Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY!!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from "@/utils/supabase";
+import { NextResponse } from "next/server";
 
 export async function GET(req: Request) {
-    try {
-        const { data, error } = await supabase.from("banners").select();
-        if (error) {
-            throw new Error(error.message);
-        }
-        return new Response(JSON.stringify(data), { status: 200 });
-    } catch (error) {
-        return new Response(JSON.stringify(error), { status: 500 });
-    }
+	try {
+		const { data, error } = await supabase.from("banners").select();
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		}
+
+		if (!data || data.length === 0) {
+			return NextResponse.json({ error: "Banners not found" }, { status: 404 });
+		}
+
+		return NextResponse.json(data , { status: 200 });
+	} catch (error) {
+		console.error("Server error:", error);
+		return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+	}
 }

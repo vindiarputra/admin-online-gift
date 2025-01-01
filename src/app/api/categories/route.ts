@@ -1,9 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/utils/supabase";
+import { NextResponse } from "next/server";
 
-// Inisialisasi Supabase Client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_KEY!!;
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export async function GET(req: Request) {
 	try {
@@ -11,8 +8,10 @@ export async function GET(req: Request) {
 		if (error) {
 			throw new Error(error.message);
 		}
-		return new Response(JSON.stringify(data), { status: 200 });
+		return NextResponse.json(data, { status: 200 });
 	} catch (error) {
-		return new Response(JSON.stringify(error), { status: 500 });
+		return NextResponse.json(error, { status: 500 });
 	}
 }
+
+
