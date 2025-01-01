@@ -40,6 +40,10 @@ export default function Navbar() {
 			name: "Products",
 			href: "/products",
 		},
+		{
+			name: "Orders",
+			href: "/orders",
+		},
 	];
 
 	return (

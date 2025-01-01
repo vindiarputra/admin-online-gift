@@ -1,8 +1,20 @@
 import { LayoutGrid, Package, TicketSlash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import { supabase } from "@/utils/supabase";
 import Image from "next/image";
+import RevenueChart from "@/components/organisms/RevenueChart";
+import { TopProductTable } from "@/components/organisms/TopProductTable";
+
+
+
 
 const fetchBannerData = async () => {
 	const { data, error } = await supabase.from("banners").select();
@@ -34,10 +46,25 @@ const fetchProductsData = async () => {
 	return data || [];
 };
 
+const fetchOrdersData = async () => {
+	const { data, error } = await supabase.from("transactions").select();
+
+	if (error) {
+		console.error(error);
+		return [];
+	}
+	return data || [];
+};
+
+
 export default async function Dashboard() {
 	const banners = await fetchBannerData();
 	const categories = await fetchCategoriesData();
 	const products = await fetchProductsData();
+	const orders = await fetchOrdersData();
+	const totalRevenue = orders.reduce((sum, order) => sum + order.gross_amount, 0);
+	const totalOrders = orders.length;
+	const averageOrderValue = totalRevenue / totalOrders;
 
 	const totalProductsPerCategory = products.reduce((productCountMap, product) => {
 		const categoryId = product.categoryId;
@@ -89,7 +116,38 @@ export default async function Dashboard() {
 						</CardContent>
 					</Card>
 				))}
+
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+						<CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold">Rp {totalRevenue.toLocaleString("id-ID")}</div>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+						<CardTitle className="text-sm font-medium">Orders</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold">{totalOrders}</div>
+					</CardContent>
+				</Card>
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+						<CardTitle className="text-sm font-medium">Average Order Value</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="text-2xl font-bold">Rp {averageOrderValue.toLocaleString("id-ID")}</div>
+					</CardContent>
+				</Card>
 			</div>
+
+			<div className="grid grid-cols-1 gap-6 mb-6">
+				<RevenueChart orders={orders} />
+			</div>
+
+			<TopProductTable orders={orders} />
 
 			{/* Banners Section */}
 			<Card>

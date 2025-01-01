@@ -26,7 +26,7 @@ const BannersLayout: FC<BannersLayoutProps> = ({banners}) => {
 					</button>
 				</div>
 				<DataLists data={banners} />
-				<ApiEndPoints />
+				{/* <ApiEndPoints /> */}
 			</div>
 		</div>
 	);

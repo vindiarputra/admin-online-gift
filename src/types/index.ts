@@ -33,3 +33,41 @@ export interface Product {
 	onSale: boolean,
 	created_at: string,
 }
+
+export interface ClerkUser {
+	id: string;
+	tlp: number;
+	name: string;
+	email: string;
+	address: string;
+	clerk_id: string;
+	imageUrl: string;
+	created_at: string;
+	postal_code: number;
+}
+
+export interface Item {
+	id: string;
+	created_at: string;
+	label: string;
+	description: string;
+	price: number;
+	isFeatured: boolean;
+	isNew: boolean;
+	onSale: boolean;
+	quantity: number;
+	image: string;
+	productId: string;
+	clerk_id: string;
+}
+
+export interface Order {
+	id: string;
+	created_at: string;
+	clerk_id: ClerkUser;
+	gross_amount: number;
+	payment_type: string;
+	bank: string;
+	item: Item[];
+}
+
